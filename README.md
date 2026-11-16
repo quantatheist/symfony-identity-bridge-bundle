@@ -1,0 +1,1 @@
+# symfony-identity-bridge-bundle
