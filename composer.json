@@ -1,0 +1,24 @@
+{
+  "name": "quantatheist/symfony-identity-bridge-bundle",
+  "description": "Provider-neutral Symfony OIDC identity resolution extension points",
+  "type": "symfony-bundle",
+  "license": "MIT",
+  "require": {
+    "php": ">=8.4",
+    "symfony/framework-bundle": "^8.1",
+    "symfony/security-core": "^8.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^12.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Quantatheist\\IdentityBridge\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Quantatheist\\IdentityBridge\\Tests\\": "tests/"
+    }
+  }
+}
