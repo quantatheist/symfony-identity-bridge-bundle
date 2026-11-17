@@ -1,0 +1,29 @@
+# Example for config/packages/drenso_oidc.yaml (Symfony 8.1 or existing Drenso apps).
+# Default Drenso/Symfony web callback: /login_check. Do not override by default.
+drenso_oidc:
+    clients:
+        default:
+            well_known_url: '%env(OIDC_WELL_KNOWN_URL)%'
+            client_id: '%env(OIDC_CLIENT_ID)%'
+            client_secret: '%env(OIDC_CLIENT_SECRET)%'
+            code_challenge_method: S256
+            disable_nonce: false
+            # Default: redirect_route: /login_check
+
+# config/packages/security.yaml FRAGMENT (merge with existing security.yaml):
+# security:
+#     providers:
+#         oidc_users:
+#             id: App\Security\OidcUserProvider
+#     firewalls:
+#         main:
+#             provider: oidc_users
+#             oidc:
+#                 client: default
+#                 login_path: /login
+#                 check_path: /login_check
+#                 user_identifier_property: sub
+#
+# In Authentik register exactly https://<public-app-origin>/login_check
+# for this confidential WEB OAuth client. For an existing app with a custom
+# check_path (e.g. Teatime), register its actual callback instead.

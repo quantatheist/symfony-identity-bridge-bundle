@@ -1,0 +1,31 @@
+# Symfony 8.2 native OIDC: application-owned security.yaml FRAGMENT.
+# Default Symfony login callback: /oidc/callback (do not override).
+# Register https://<public-app-origin>/oidc/callback as the exact web redirect in Authentik.
+# Symfony route loader automatically defines the callback when imported.
+# OIDC_PROVIDER_URI must exactly equal the 'issuer' in Authentik's metadata.
+# OIDC_WELL_KNOWN_URL is for Authentik provider-scoped discovery (global issuer mode).
+security:
+    providers:
+        oidc_users:
+            oidc: ~
+
+    firewalls:
+        main:
+            provider: oidc_users
+            oidc_login:
+                provider_uri: '%env(OIDC_PROVIDER_URI)%'
+                discovery_uri: '%env(OIDC_WELL_KNOWN_URL)%'
+                client_id: '%env(OIDC_CLIENT_ID)%'
+                client_authentication:
+                    client_secret_basic: '%env(OIDC_CLIENT_SECRET)%'
+                scope: [openid, profile, email]
+                # Native default: check_path: /oidc/callback
+                # PKCE S256 and state/nonce handled by native Symfony.
+
+# config/routes/security.yaml:
+# _security:
+#     resource: security.route_loader
+#     type: service
+#
+# Only the main WEB firewall uses oidc_login. Your separate stateless API firewall
+# must use access_token and no browser callback.
