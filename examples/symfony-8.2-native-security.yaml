@@ -1,0 +1,30 @@
+# Example fragment for config/packages/security.yaml (Symfony 8.2 ONLY).
+# Keep the application's own user provider, access rules, logout, etc.
+# OIDC_PROVIDER_URI = EXACT 'issuer' in Authentik OIDC discovery.
+# OIDC_WELL_KNOWN_URL = optional provider-scoped discovery document URL.
+# Symfony example env names are conventional, not magic/reserved.
+security:
+    providers:
+        oidc_users:
+            oidc: ~ # Replace with an application-specific provider if needed
+
+    firewalls:
+        main:
+            provider: oidc_users
+            oidc_login:
+                provider_uri: '%env(OIDC_PROVIDER_URI)%'
+                discovery_uri: '%env(OIDC_WELL_KNOWN_URL)%'
+                client_id: '%env(OIDC_CLIENT_ID)%'
+                client_authentication:
+                    client_secret_basic: '%env(OIDC_CLIENT_SECRET)%'
+                scope: [openid, profile, email]
+                check_path: /oidc/callback
+
+# Also ensure config/routes/security.yaml imports:
+# _security:
+#     resource: security.route_loader
+#     type: service
+#
+# Register https://<public-app-origin>/oidc/callback
+# as the confidential WEB client's exact allowed redirect in Authentik.
+# Do not expose OIDC_CLIENT_SECRET to mobile clients or client discovery.
