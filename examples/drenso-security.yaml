@@ -1,0 +1,30 @@
+# Example fragments for an application using Drenso (e.g. Symfony 8.1).
+# config/packages/drenso_oidc.yaml:
+drenso_oidc:
+    clients:
+        default:
+            well_known_url: '%env(OIDC_WELL_KNOWN_URL)%'
+            client_id: '%env(OIDC_CLIENT_ID)%'
+            client_secret: '%env(OIDC_CLIENT_SECRET)%'
+            code_challenge_method: S256
+            disable_nonce: false
+            redirect_route: /login_check
+
+# config/packages/security.yaml (MERGE into the existing application security config):
+# security:
+#     providers:
+#         oidc_users:
+#             id: App\Security\OidcUserProvider
+#     firewalls:
+#         main:
+#             provider: oidc_users
+#             oidc:
+#                 client: default
+#                 login_path: /login
+#                 check_path: /login_check
+#                 user_identifier_property: sub
+#
+# Register https://<public-app-origin>/login_check
+# as the confidential WEB client's exact allowed redirect in Authentik.
+# The actual check_path and redirect_route must match the application's routing.
+# Do not use these login callback paths for the mobile public client.
