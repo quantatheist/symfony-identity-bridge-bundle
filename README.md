@@ -21,6 +21,8 @@ The host app retains its User entity, identity-link model, permissions, database
 
 See [OIDC configuration (native Symfony 8.2 / Drenso)](docs/oidc-configuration.md) for Authentik values, exact callback/redirect URI registration, and existing application ENV compatibility. No new web OIDC env variables are introduced by this bundle.
 
+[Authentik setup and redirect matrix](docs/authentik-setup.md)
+
 ## Development
 
 `composer install` then `vendor/bin/phpunit`. No networked identity provider is required for the contract tests.
