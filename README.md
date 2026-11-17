@@ -17,6 +17,10 @@ See [architecture and security boundaries](docs/architecture.md).
 
 The host app retains its User entity, identity-link model, permissions, database schema and audit policies. Symfony 8.2 native `oidc_login` is the intended browser-login integration point.
 
+## Integration configuration
+
+See [OIDC configuration (native Symfony 8.2 / Drenso)](docs/oidc-configuration.md) for Authentik values, exact callback/redirect URI registration, and existing application ENV compatibility. No new web OIDC env variables are introduced by this bundle.
+
 ## Development
 
 `composer install` then `vendor/bin/phpunit`. No networked identity provider is required for the contract tests.
