@@ -9,7 +9,8 @@
     "symfony/security-core": "^8.1"
   },
   "require-dev": {
-    "phpunit/phpunit": "^12.0"
+    "phpunit/phpunit": "^12.0",
+    "drenso/symfony-oidc-bundle": "^4.5"
   },
   "autoload": {
     "psr-4": {
@@ -20,5 +21,8 @@
     "psr-4": {
       "Quantatheist\\IdentityBridge\\Tests\\": "tests/"
     }
+  },
+  "suggest": {
+    "drenso/symfony-oidc-bundle": "Install for the optional Symfony 8.1 Drenso OIDC web-login user provider adapter."
   }
 }
