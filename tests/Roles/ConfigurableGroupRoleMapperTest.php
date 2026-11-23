@@ -34,6 +34,17 @@ final class ConfigurableGroupRoleMapperTest extends TestCase
         }
     }
 
+    public function testTrustedGroupAdapterMatchesVerifiedIdentityMapping(): void
+    {
+        $mapper = new ConfigurableGroupRoleMapper(['registration_admins' => ['ROLE_ADMIN']], ['ROLE_USER']);
+        foreach ([['registration_admins'], ['unknown'], null, 'registration_admins', [' registration_admins'], ['registration_admins' => true]] as $groups) {
+            self::assertSame(
+                $mapper->mappedRoles($this->identity($groups)),
+                $mapper->mappedRolesFromTrustedGroups($groups),
+            );
+        }
+    }
+
     public function testGroupListDuplicatesDoNotDuplicateRoles(): void
     {
         $mapper = new ConfigurableGroupRoleMapper(['group' => ['ROLE_USER', 'ROLE_ADMIN']], ['ROLE_USER']);
