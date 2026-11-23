@@ -30,3 +30,15 @@ See [OIDC configuration (native Symfony 8.2 / Drenso)](docs/oidc-configuration.m
 ## Reusable role policies (experimental integration)
 
 `Roles\\ConfigurableGroupRoleMapper` maps exact, trusted group claims to an explicit allowlist; `Roles\\ManagedRoleSynchronizer` removes stale externally managed roles without deleting application-owned roles. See [three-project integration matrix](docs/integration-matrix.md). This does not yet constitute a working login/authenticator; host integration and real-provider tests remain required.
+
+### Existing verified user providers (Drenso)
+
+A host that already receives authenticated OIDC group data from Drenso may use
+`ConfigurableGroupRoleMapper::mappedRolesFromTrustedGroups($groups)` without
+inventing an issuer or subject just to map roles. **This method does not verify
+claims**: call it only inside the trusted OIDC user-provider flow, never with
+request parameters or decoded unverified JWTs. For new provider-neutral adapters,
+prefer `mappedRoles(VerifiedExternalIdentity $identity)`.
+
+Neither method refreshes Authentik membership automatically: cached sessions
+continue to reflect the last authenticated group claim until reauthentication.
