@@ -26,3 +26,7 @@ See [OIDC configuration (native Symfony 8.2 / Drenso)](docs/oidc-configuration.m
 ## Development
 
 `composer install` then `vendor/bin/phpunit`. No networked identity provider is required for the contract tests.
+
+## Reusable role policies (experimental integration)
+
+`Roles\\ConfigurableGroupRoleMapper` maps exact, trusted group claims to an explicit allowlist; `Roles\\ManagedRoleSynchronizer` removes stale externally managed roles without deleting application-owned roles. See [three-project integration matrix](docs/integration-matrix.md). This does not yet constitute a working login/authenticator; host integration and real-provider tests remain required.
