@@ -51,6 +51,31 @@ final class ConfigurableGroupRoleMapperTest extends TestCase
         self::assertSame(['ROLE_USER', 'ROLE_ADMIN'], $mapper->mappedRoles($this->identity(['group', 'group'])));
     }
 
+    public function testDiagnosticReportsExactMatchesAndRoleOriginsWithoutClaims(): void
+    {
+        $mapper = new ConfigurableGroupRoleMapper(['registration_admins' => ['ROLE_ADMIN']], ['ROLE_USER']);
+        $report = $mapper->diagnoseTrustedGroups(['registration_admins', 'other', 'registration_admins'], ['ROLE_USER', 'ROLE_ADMIN', 'ROLE_LOCAL']);
+        self::assertSame(['registration_admins', 'other'], $report['groups']);
+        self::assertSame(['registration_admins' => ['ROLE_ADMIN']], $report['group_role_matches']);
+        self::assertSame(['ROLE_USER'], $report['default_roles']);
+        self::assertSame(['ROLE_USER', 'ROLE_ADMIN'], $report['external_roles']);
+        self::assertSame(['ROLE_LOCAL'], $report['local_roles']);
+        self::assertTrue($report['has_role_admin']);
+        self::assertArrayNotHasKey('claims', $report);
+        self::assertArrayNotHasKey('token', $report);
+    }
+
+    public function testDiagnosticIgnoresInvalidGroupClaimsAndDoesNotInventAdmin(): void
+    {
+        $mapper = new ConfigurableGroupRoleMapper(['registration_admins' => ['ROLE_ADMIN']], ['ROLE_USER']);
+        foreach (['registration_admins', ['registration_admins' => true], [['registration_admins']], [' registration_admins']] as $claim) {
+            $report = $mapper->diagnoseTrustedGroups($claim, ['ROLE_USER']);
+            self::assertSame([], $report['group_role_matches']);
+            self::assertSame(['ROLE_USER'], $report['external_roles']);
+            self::assertFalse($report['has_role_admin']);
+        }
+    }
+
     public function testRejectsInvalidConfiguredRoles(): void
     {
         $this->expectException(\InvalidArgumentException::class);

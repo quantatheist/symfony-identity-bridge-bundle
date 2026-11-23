@@ -65,6 +65,42 @@ final readonly class ConfigurableGroupRoleMapper implements ExternalGroupRoleMap
         return array_values(array_unique($roles));
     }
 
+    /**
+     * Explain role decisions for an already authenticated user.
+     * Do not pass unverified claims. This returns only group names and roles,
+     * never tokens, subjects, identifiers or the complete claims payload.
+     *
+     * @param list<string> $effectiveRoles Roles currently assigned by the host
+     * @return array{groups: list<string>, group_role_matches: array<string, list<string>>, default_roles: list<string>, external_roles: list<string>, local_roles: list<string>, effective_roles: list<string>, has_role_admin: bool}
+     */
+    public function diagnoseTrustedGroups(mixed $groups, array $effectiveRoles = []): array
+    {
+        $groups = is_array($groups) && array_is_list($groups) ? $groups : [];
+        $groups = array_values(array_unique(array_filter($groups, static fn (mixed $value): bool =>
+            is_string($value) && $value !== '' && trim($value) === $value
+        )));
+        $matches = [];
+        foreach ($this->groupRoles as $group => $roles) {
+            if (in_array($group, $groups, true)) {
+                $matches[$group] = $roles;
+            }
+        }
+        $externalRoles = $this->mappedRolesFromTrustedGroups($groups);
+        // A role that is both locally and externally granted is attributed to the
+        // external policy; the origin of overlapping roles cannot be inferred.
+        $localRoles = array_values(array_diff($effectiveRoles, $externalRoles));
+
+        return [
+            'groups' => $groups,
+            'group_role_matches' => $matches,
+            'default_roles' => $this->defaultRoles,
+            'external_roles' => $externalRoles,
+            'local_roles' => $localRoles,
+            'effective_roles' => array_values(array_unique($effectiveRoles)),
+            'has_role_admin' => in_array('ROLE_ADMIN', $effectiveRoles, true),
+        ];
+    }
+
     /** @param array<mixed> $roles */
     private function validateRoles(array $roles): void
     {
