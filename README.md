@@ -42,3 +42,19 @@ prefer `mappedRoles(VerifiedExternalIdentity $identity)`.
 
 Neither method refreshes Authentik membership automatically: cached sessions
 continue to reflect the last authenticated group claim until reauthentication.
+
+### Role diagnostics (developer-only hosts)
+
+`ConfigurableGroupRoleMapper::diagnoseTrustedGroups($trustedGroups, $currentRoles)`
+provides a structured explanation of the trusted group's exact role matches,
+explicit default roles, group/default-derived externally managed roles, currently
+effective roles, whether `ROLE_ADMIN` is effective, and roles outside this mapper
+policy (reported as `local_roles`). Overlapping local/external role origins cannot
+be determined from the final role list: overlapping roles are attributed to the
+mapper policy, and `local_roles` means **not covered by this mapper**.
+
+This is a pure computation helper, **not an HTTP endpoint**. Host apps must
+restrict any UI/route displaying it to development and explicitly authorized
+users. Pass only a previously authenticated OIDC session's group values and role
+list; do not include raw claims, tokens, secrets, email or subjects. Because
+sessions can be stale, reauthenticate after Authentik membership changes.
