@@ -36,7 +36,18 @@ final readonly class ConfigurableGroupRoleMapper implements ExternalGroupRoleMap
 
     public function mappedRoles(VerifiedExternalIdentity $identity): array
     {
-        $groups = $identity->claims['groups'] ?? [];
+        return $this->mappedRolesFromTrustedGroups($identity->claims['groups'] ?? []);
+    }
+
+    /**
+     * Map a group claim supplied by a host OIDC adapter after provider verification.
+     * This method performs NO claim or token verification. Use only after Drenso
+     * (or another trusted authenticator) has validated the OIDC response.
+     *
+     * @return list<string>
+     */
+    public function mappedRolesFromTrustedGroups(mixed $groups): array
+    {
         // Invalid/missing claims never confer group-derived privileges.
         if (!is_array($groups) || !array_is_list($groups)) {
             $groups = [];
